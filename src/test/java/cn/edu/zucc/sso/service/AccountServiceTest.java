@@ -1,10 +1,12 @@
 package cn.edu.zucc.sso.service;
 
 import cn.edu.zucc.sso.pojo.BeanAccount;
+import cn.edu.zucc.sso.pojo.BeanUserInfo;
 import cn.edu.zucc.sso.service.impl.AccountServiceImpl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
@@ -24,9 +26,12 @@ class AccountServiceTest {
 //    @Autowired
     private AccountServiceImpl service;
 
+    @Autowired
+    private UserInfoService userInfoService;
+
     @Test
     void testList(){
-        List<BeanAccount> list = service.list();
+        List<BeanUserInfo> list = userInfoService.list();
         System.out.println(JSON.toJSONString(list));
     }
 

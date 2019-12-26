@@ -16,7 +16,7 @@ import javax.annotation.Resource;
  * @date 2019/12/23 15:21
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/token")
 public class TokenController {
 
     @Resource(name = "accountServiceImpl")

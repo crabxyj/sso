@@ -18,10 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 public class JwtFilter extends BasicHttpAuthenticationFilter {
     /**
      * 执行登录认证
-     * @param request
-     * @param response
-     * @param mappedValue
-     * @return
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
@@ -37,7 +33,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
      *
      */
     @Override
-    protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
+    protected boolean executeLogin(ServletRequest request, ServletResponse response) {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String token = httpServletRequest.getHeader("Authorization");
         JwtToken jwtToken = new JwtToken(token);
