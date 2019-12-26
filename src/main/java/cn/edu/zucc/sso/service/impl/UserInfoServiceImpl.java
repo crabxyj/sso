@@ -48,7 +48,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoDao, BeanUserInfo> 
                 Set<Integer> roleIds = roles.stream()
                         .map(BeanRole::getRoleId)
                         .collect(Collectors.toSet());
-                one.setPermissions(permissionService.selectByRoleId(roleIds));
+                one.setPermissions(permissionService.getByRoleId(roleIds));
             }
         }
         return one;

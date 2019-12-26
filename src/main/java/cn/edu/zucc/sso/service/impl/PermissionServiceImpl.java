@@ -22,7 +22,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, BeanPermis
     private PermissionDao dao;
 
     @Override
-    public Set<BeanPermission> selectByRoleId(Collection<Integer> roleIds){
+    public Set<BeanPermission> getByRoleId(Collection<Integer> roleIds){
         Set<Integer> collect = roleIds.stream()
                 .filter(id -> id > 0)
                 .collect(Collectors.toSet());

@@ -19,7 +19,7 @@ import javax.annotation.Resource;
  * @author crabxyj
  * @date 2019/12/24 20:50
  */
-@Component("myRealm")
+//@Component("myRealm")
 public class MyRealm extends AuthorizingRealm {
 
     @Resource(name = "accountServiceImpl")

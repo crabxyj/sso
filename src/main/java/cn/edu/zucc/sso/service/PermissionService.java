@@ -12,6 +12,6 @@ import java.util.Set;
  */
 public interface PermissionService extends IService<BeanPermission> {
 
-    Set<BeanPermission> selectByRoleId(Collection<Integer> roleIds);
+    Set<BeanPermission> getByRoleId(Collection<Integer> roleIds);
 
 }

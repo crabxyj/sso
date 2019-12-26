@@ -1,13 +1,18 @@
 package cn.edu.zucc.sso.service.impl;
 
 import cn.edu.zucc.sso.dao.RoleDao;
+import cn.edu.zucc.sso.exception.BaseException;
 import cn.edu.zucc.sso.pojo.BeanRole;
 import cn.edu.zucc.sso.service.RoleService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -21,12 +26,35 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, BeanRole> implements R
     private RoleDao roleDao;
 
     @Override
-    public Set<BeanRole> getByPersonId(int personId){
-        if (personId<=0){
+    public Set<BeanRole> getByPersonId(int personId) {
+        if (personId <= 0) {
             return new HashSet<>();
         }
         return new HashSet<>(roleDao.selectByPersonId(personId));
     }
 
+    @Override
+    public IPage<BeanRole> loadPage(int page, int pageSize) {
+        Page<BeanRole> page1 = new Page<>(page, pageSize);
+        return page(page1);
+    }
 
+    public void add(String roleName) throws BaseException {
+        QueryWrapper<BeanRole> query = new QueryWrapper<>();
+        query.eq("role_name", roleName);
+        if (getOne(query) != null) {
+            throw new BaseException(10, "当前角色已存在");
+        }
+        BeanRole role = BeanRole.builder().roleName(roleName).build();
+        save(role);
+    }
+
+    public void delete(int roleId) throws BaseException {
+        List<Integer> persons = roleDao.getPersonIdByRoleId(roleId);
+        if (!persons.isEmpty()) {
+            throw new BaseException(11, "当前角色正在被使用,无法删除");
+        }
+        removeById(roleId);
+        roleDao.deletePermissionByRoleId(roleId);
+    }
 }
