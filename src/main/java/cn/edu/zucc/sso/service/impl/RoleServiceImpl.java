@@ -12,7 +12,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,7 +56,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, BeanRole> implements R
 
     @Override
     public void delete(int roleId) throws BaseException {
-        List<Integer> persons = roleDao.getPersonIdByRoleId(roleId);
+        List<Integer> persons = roleDao.selectPersonIdByRoleId(roleId);
         if (!persons.isEmpty()) {
             throw new BaseException("当前角色正在被使用,无法删除");
         }

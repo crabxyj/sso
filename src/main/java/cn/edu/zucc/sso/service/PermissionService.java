@@ -37,18 +37,30 @@ public interface PermissionService extends IService<BeanPermission> {
      */
     List<BeanPermission> load(String type);
 
+    /**
+     * 添加权限
+     * @param permission 权限
+     * @return 添加的权限
+     * @throws BaseException 当前权限已存在
+     */
+    BeanPermission add(BeanPermission permission) throws BaseException;
 
-    void add(Collection<BeanPermission> permissions)throws BaseException;
+    /**
+     * 删除权限
+     * @param permissionId 权限编号
+     * @throws BaseException 被使用无法删除
+     */
+    void delete(int permissionId) throws BaseException;
 
     /**
      * 初始化接口权限列表
      * @throws BaseException 保存异常
      */
-    void reSetPortPermission() throws BaseException;
+    void resetPortPermission() throws BaseException;
 
-    /**
-     * 获取接口列表
-     * @return 接口列表
-     */
-    List<BeanPermission> loadPortPermission();
+//    /**
+//     * 获取接口列表
+//     * @return 接口列表
+//     */
+//    List<BeanPermission> loadPortPermission();
 }

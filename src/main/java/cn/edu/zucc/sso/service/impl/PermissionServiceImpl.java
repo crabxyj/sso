@@ -62,7 +62,18 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, BeanPermis
     }
 
     @Override
-    public void add(Collection<BeanPermission> permissions)throws BaseException {
+    public BeanPermission add(BeanPermission permission) throws BaseException {
+        QueryWrapper<BeanPermission> query = new QueryWrapper<>();
+        query.eq("type", permission.getName());
+        query.eq("name",permission.getName());
+        if (getOne(query) != null) {
+            throw new BaseException("当前权限已存在");
+        }
+        save(permission);
+        return permission;
+    }
+
+    private void add(Collection<BeanPermission> permissions)throws BaseException {
         for (BeanPermission permission : permissions){
             if (StringUtils.isEmpty(permission.getName())||StringUtils.isEmpty(permission.getType())){
                 throw new BaseException("权限内容不能为空");
@@ -72,18 +83,36 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, BeanPermis
     }
 
     @Override
-    public void reSetPortPermission() throws BaseException {
-        List<BeanPermission> permissions = load("port");
-        Set<@NotNull(message = "name 不能为空") String> set = permissions.stream()
+    public void delete(int permissionId) throws BaseException {
+        List<Integer> roleIds = dao.selectRoleIdByPermissionId(permissionId);
+        if(!roleIds.isEmpty()){
+            throw new BaseException("当前权限正在被使用，无法删除");
+        }
+        removeById(permissionId);
+    }
+
+    @Override
+    public void resetPortPermission() throws BaseException {
+        List<BeanPermission> permissionInDataBase = load("type");
+        Set<@NotNull(message = "name 不能为空") String> urls = permissionInDataBase.stream()
                 .map(BeanPermission::getName)
-                .filter(name -> name != null && "".equals(name.trim()))
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        List<BeanPermission> portPermission = loadPortPermission();
-        List<BeanPermission> addPortPermission = portPermission.stream()
-                .filter(p -> !set.contains(p.getName()))
-                .collect(Collectors.toList());
-        add(addPortPermission);
+        List<String> nowUrls = loadPortPermission();
+        Set<BeanPermission> addPermissions = nowUrls.stream()
+                .filter(url -> !urls.contains(url))
+                .map(url->new BeanPermission().setType("port").setName(url))
+                .collect(Collectors.toSet());
+
+        add(addPermissions);
+
+
+        Set<Integer> ids = permissionInDataBase.stream()
+                .filter(p -> !nowUrls.contains(p.getName()))
+                .map(BeanPermission::getPermissionId)
+                .collect(Collectors.toSet());
+        removeByIds(ids);
     }
 
     @Override
@@ -101,8 +130,8 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, BeanPermis
         return new HashSet<>(permissions);
     }
 
-    @Override
-    public List<BeanPermission> loadPortPermission() {
+
+    public List<String> loadPortPermission() {
         RequestMappingHandlerMapping mapping = applicationContext.getBean("requestMappingHandlerMapping", RequestMappingHandlerMapping.class);
         //获取url与类和方法的对应信息
         Map<RequestMappingInfo, HandlerMethod> methods = mapping.getHandlerMethods();
@@ -120,10 +149,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, BeanPermis
             PatternsRequestCondition condition = m.getKey().getPatternsCondition();
             urls.addAll(condition.getPatterns());
         }
-        String type = "port";
-        return urls.stream()
-                .map(url -> new BeanPermission().setName(url).setType(type))
-                .collect(Collectors.toList());
+        return urls;
     }
 
     public JSONArray getAllUrlDetail() {

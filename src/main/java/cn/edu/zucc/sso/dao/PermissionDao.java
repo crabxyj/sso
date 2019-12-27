@@ -21,4 +21,13 @@ public interface PermissionDao extends BaseMapper<BeanPermission> {
      */
     @Select("SELECT permission_id,type,name FROM `permission` WHERE permission_id in (select permission_id from role_permission WHERE role_id in (#{ids}) )")
     List<BeanPermission> selectByRoleId(String ids);
+
+    /**
+     * 获取当前权限使用角色
+     * @param permissionId 角色id
+     * @return personIds
+     */
+    @Select("select role_id from role_permission WHERE permission_id = #{permissionId} ")
+    List<Integer> selectRoleIdByPermissionId(int permissionId);
+
 }

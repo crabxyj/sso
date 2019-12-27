@@ -20,7 +20,7 @@ public class StartPermissionService implements CommandLineRunner {
     @Override
     public void run(String... args){
         try{
-            service.reSetPortPermission();
+            service.resetPortPermission();
         }catch (Exception e){
             log.error("接口权限初始化异常");
         }

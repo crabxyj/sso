@@ -32,7 +32,7 @@ public class RoleController {
     }
 
     @RequestMapping(value = "/load",method = {RequestMethod.GET,RequestMethod.POST})
-    public List<BeanRole> loadPage(){
+    public List<BeanRole> load(){
         return roleService.list();
     }
 
