@@ -4,6 +4,7 @@ import cn.edu.zucc.sso.exception.BaseException;
 import cn.edu.zucc.sso.pojo.BeanRole;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
@@ -11,6 +12,7 @@ import java.util.Set;
  * @author crabxyj
  * @date 2019/12/25 14:15
  */
+@Transactional(rollbackFor = Exception.class)
 public interface RoleService extends IService<BeanRole> {
 
     /**
@@ -32,8 +34,9 @@ public interface RoleService extends IService<BeanRole> {
      * 添加 roleid自增
      * @param roleName  角色名 不可重复
      * @throws BaseException 重复异常
+     * @return BeanRole 添加的对象
      */
-    void add(String roleName) throws BaseException;
+    BeanRole add(String roleName) throws BaseException;
 
     /**
      * 删除

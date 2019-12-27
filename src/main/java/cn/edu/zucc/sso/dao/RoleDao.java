@@ -27,13 +27,13 @@ public interface RoleDao extends BaseMapper<BeanRole> {
      * @param roleId 角色id
      * @return personIds
      */
-    @Select("select person_id from user_role WHERE role_id = #{roleId} )")
+    @Select("select person_id from user_role WHERE role_id = #{roleId} ")
     List<Integer> getPersonIdByRoleId(int roleId);
 
     /**
      * 根据角色删除
      * 权限-角色关联信息
      */
-    @Select("delete from role_permission WHERE role_id = #{roleId} )")
+    @Select("delete from role_permission WHERE role_id = #{roleId} ")
     void deletePermissionByRoleId(int roleId);
 }

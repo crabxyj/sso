@@ -1,8 +1,9 @@
 package cn.edu.zucc.sso.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Builder;
 import lombok.Data;
 
 import java.util.Set;
@@ -12,9 +13,9 @@ import java.util.Set;
  * @date 2019/12/25 13:02
  */
 @Data
-@Builder
 @TableName("role")
 public class BeanRole {
+    @TableId(type = IdType.AUTO)
     private int roleId;
     private String roleName;
 

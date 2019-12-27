@@ -1,5 +1,6 @@
 package cn.edu.zucc.sso.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -16,6 +17,7 @@ import lombok.Setter;
 @TableName("normal_account")
 public class BeanAccount {
     @ApiModelProperty(value = "id",hidden = true)
+    @TableId
     private int id;
     @ApiModelProperty(value = "账号",example = "accountName ")
     private String account;

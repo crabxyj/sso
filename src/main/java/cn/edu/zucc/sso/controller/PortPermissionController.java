@@ -2,9 +2,7 @@ package cn.edu.zucc.sso.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
@@ -19,13 +17,10 @@ import java.util.Map;
  * @author crabxyj
  * @date 2019/12/26 9:37
  */
-@RestController
-@RequestMapping("/system/port")
 public class PortPermissionController {
 
     private final WebApplicationContext applicationContext;
 
-    @Autowired
     public PortPermissionController(WebApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }

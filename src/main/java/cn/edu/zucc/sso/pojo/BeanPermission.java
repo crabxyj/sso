@@ -1,8 +1,8 @@
 package cn.edu.zucc.sso.pojo;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
 
@@ -10,11 +10,11 @@ import javax.validation.constraints.NotNull;
  * @author crabxyj
  * @date 2019/12/25 14:08
  */
-@Getter
-@Setter
+@Data
+@Accessors(chain = true)
 @TableName(value = "permission")
 public class BeanPermission {
-    private int permissonId;
+    private int permissionId;
 
     @NotNull(message = "type 不能为空")
     private String type;
@@ -23,7 +23,7 @@ public class BeanPermission {
 
     @Override
     public int hashCode() {
-        return permissonId;
+        return permissionId;
     }
 
     @Override

@@ -3,6 +3,8 @@ package cn.edu.zucc.sso.resultformat;
 import cn.edu.zucc.sso.exception.BaseException;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -11,31 +13,48 @@ import java.util.List;
  * @date 2019/12/23 16:08
  */
 public class ResultFormatUtils {
+    private static final JSONObject SYS_EXCEPTION;
 
-    public static JSONObject ressetResult(Object obj,int code,String msg){
+    static {
+        SYS_EXCEPTION = new JSONObject();
+        SYS_EXCEPTION.put("code", 3001);
+        SYS_EXCEPTION.put("msg", "系统繁忙");
+    }
+
+    public static JSONObject ressetResult(Object obj) {
+        return ressetResult(obj, 0, "success");
+    }
+
+    public static JSONObject ressetResult(Object obj, int code, String msg) {
         JSONObject result = new JSONObject();
         if (obj instanceof List<?>) {
-            result.put("rs",resetList((List<?>) obj));
-        } else {
-            result.put("r",obj);
+            result.put("rs", resetList((List<?>) obj));
+        } else if (obj instanceof IPage) {
+            IPage iPage = (IPage) obj;
+            JSONObject json = new JSONObject();
+            json.put("rs", iPage.getRecords());
+            json.put("pages", iPage.getPages());
+            json.put("pageIndex", iPage.getCurrent());
+            json.put("pageSize", iPage.getSize());
+            json.put("totalCount", iPage.getTotal());
+            result.put("r", json);
+        } else if (obj != null) {
+            result.put("r", obj);
         }
-        result.put("code",code);
-        result.put("msg",msg);
+        result.put("code", code);
+        result.put("msg", msg);
         return result;
     }
 
-    public static JSONObject systemExceptionResult(Exception e){
+    public static JSONObject baseExceptionResult(BaseException e) {
         JSONObject result = new JSONObject();
-        result.put("code",-1);
-        result.put("msg",e.getMessage());
+        result.put("code", 3000);
+        result.put("msg", e.getMessage());
         return result;
     }
 
-    public static JSONObject baseExceptionResult(BaseException e){
-        JSONObject result = new JSONObject();
-        result.put("code",e.getCode());
-        result.put("msg",e.getMsg());
-        return result;
+    public static JSONObject sysExceptionResult() {
+        return SYS_EXCEPTION;
     }
 
     private static JSONArray resetList(List<?> list) {

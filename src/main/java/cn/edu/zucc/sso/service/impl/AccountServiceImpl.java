@@ -31,9 +31,9 @@ public class AccountServiceImpl extends ServiceImpl<AccountDao, BeanAccount>  im
     @Override
     public BeanAccount checkLogin(String account,String pwd)throws BaseException {
         BeanAccount one = getByAccount(account)
-                .orElseThrow(() -> new BaseException(401, "账号或密码错误"));
+                .orElseThrow(() -> new BaseException("账号或密码错误"));
         if (one.getPassword().equals(pwd)){
-            throw  new BaseException(401, "账号或密码错误");
+            throw  new BaseException("账号或密码错误");
         }
         return one;
     }
