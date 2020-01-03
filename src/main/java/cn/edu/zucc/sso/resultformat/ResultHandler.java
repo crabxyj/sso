@@ -43,6 +43,7 @@ public class ResultHandler implements ResponseBodyAdvice<Object> {
         }else{
             json = ResultFormatUtils.ressetResult(o);
         }
+        // 去除null值
         return JSONObject.parseObject(json.toJSONString());
     }
 }

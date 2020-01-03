@@ -25,7 +25,6 @@ public class RoleController {
     @Resource(name = "roleServiceImpl")
     private RoleService roleService;
 
-    @ResultFormat(clazz = BeanRole.class,exclude = "roleId")
     @RequestMapping(value = "/loadPage",method = {RequestMethod.GET,RequestMethod.POST})
     public IPage<BeanRole> loadPage(@RequestParam(required = false,defaultValue = "1") int page,
                                     @RequestParam(required = false,defaultValue = "10") int pageSize){

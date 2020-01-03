@@ -2,7 +2,6 @@ package cn.edu.zucc.sso.resultformat;
 
 import cn.edu.zucc.sso.exception.BaseException;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
@@ -13,7 +12,7 @@ import java.util.stream.Collectors;
  * @author crabxyj
  * @date 2019/12/23 16:08
  */
-public class ResultFormatUtils {
+class ResultFormatUtils {
     private static final JSONObject SYS_EXCEPTION;
 
     static {
@@ -22,19 +21,19 @@ public class ResultFormatUtils {
         SYS_EXCEPTION.put("msg", "系统繁忙");
     }
 
-    public static JSONObject ressetResult(Object obj) {
+    static JSONObject ressetResult(Object obj) {
         return ressetResult(obj, 0, "success");
     }
 
-    public static JSONObject ressetResult(Object obj,ResultFormat format){
-        if (format!=null){
+    static JSONObject ressetResult(Object obj, ResultFormat format) {
+        if (format != null) {
             String s = JSONObject.toJSONString(obj, new PropertyFilter(format));
-            obj = JSONObject.parseObject(s);
+            obj = JSONObject.parseObject(s, obj.getClass());
         }
         return ressetResult(obj);
     }
 
-    public static JSONObject ressetResult(Object obj, int code, String msg) {
+    private static JSONObject ressetResult(Object obj, int code, String msg) {
         JSONObject result = new JSONObject();
         if (obj instanceof List) {
             @SuppressWarnings("unchecked")
@@ -59,21 +58,15 @@ public class ResultFormatUtils {
         return result;
     }
 
-    public static JSONObject baseExceptionResult(BaseException e) {
+    static JSONObject baseExceptionResult(BaseException e) {
         JSONObject result = new JSONObject();
         result.put("code", 3000);
         result.put("msg", e.getMessage());
         return result;
     }
 
-    public static JSONObject sysExceptionResult() {
+    static JSONObject sysExceptionResult() {
         return SYS_EXCEPTION;
-    }
-
-    private static JSONArray resetList(List<?> list) {
-        JSONArray array = new JSONArray();
-        array.addAll(list);
-        return array;
     }
 
     private static Object dataHandle(Object value) {
@@ -86,7 +79,7 @@ public class ResultFormatUtils {
                 @SuppressWarnings("unchecked")
                 IPage<Object> iPage = (IPage<Object>) value;
                 return ResultFormatUtils.handPage(iPage);
-            } else{
+            } else {
                 return ResultFormatUtils.handObject(value);
             }
         } catch (Exception e) {
@@ -109,6 +102,7 @@ public class ResultFormatUtils {
         page.setRecords(list);
         return page;
     }
+
     /**
      * 去除null值
      */

@@ -1,15 +1,16 @@
-package cn.edu.zucc.sso.fieldfilter;
+package cn.edu.zucc.sso.delete.fieldfilter;
 
 import java.lang.annotation.*;
 
 /**
  * @author crabxyj
- * @date 2020/1/3 10:27
+ * @date 2019/12/30 21:33
  */
 @Documented //增强javadoc
-@Target({ElementType.FIELD,ElementType.TYPE})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FieldFilter {
+public @interface JsonPropertyFilter {
+    Class<?> clazz() default Object.class;
     /**
      * 默认包含字段
      */
@@ -18,8 +19,9 @@ public @interface FieldFilter {
      * 排除字段
      */
     String[] exclude() default {};
+
     /**
-     * 模糊处理方式
+     * 请求可选字段
      */
-    String vague() default "";
+    String[] properties() default {};
 }
