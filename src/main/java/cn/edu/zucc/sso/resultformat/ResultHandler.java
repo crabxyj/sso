@@ -1,5 +1,6 @@
 package cn.edu.zucc.sso.resultformat;
 
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -35,6 +36,13 @@ public class ResultHandler implements ResponseBodyAdvice<Object> {
     @Override
     public Object beforeBodyWrite(Object o, MethodParameter methodParameter, MediaType mediaType, Class<? extends HttpMessageConverter<?>> aClass, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) {
         //修改返回值
-        return ResultFormatUtils.ressetResult(o);
+        Method method = methodParameter.getMethod();
+        JSONObject json;
+        if (method!=null){
+            json = ResultFormatUtils.ressetResult(o,method.getAnnotation(ResultFormat.class));
+        }else{
+            json = ResultFormatUtils.ressetResult(o);
+        }
+        return JSONObject.parseObject(json.toJSONString());
     }
 }

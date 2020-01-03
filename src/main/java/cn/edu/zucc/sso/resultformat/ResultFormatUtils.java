@@ -1,12 +1,13 @@
 package cn.edu.zucc.sso.resultformat;
 
 import cn.edu.zucc.sso.exception.BaseException;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author crabxyj
@@ -25,14 +26,26 @@ public class ResultFormatUtils {
         return ressetResult(obj, 0, "success");
     }
 
+    public static JSONObject ressetResult(Object obj,ResultFormat format){
+        if (format!=null){
+            String s = JSONObject.toJSONString(obj, new PropertyFilter(format));
+            obj = JSONObject.parseObject(s);
+        }
+        return ressetResult(obj);
+    }
+
     public static JSONObject ressetResult(Object obj, int code, String msg) {
         JSONObject result = new JSONObject();
-        if (obj instanceof List<?>) {
-            result.put("rs", resetList((List<?>) obj));
+        if (obj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Object> list = (List) obj;
+            result.put("rs", handListType(list));
         } else if (obj instanceof IPage) {
             IPage iPage = (IPage) obj;
             JSONObject json = new JSONObject();
-            json.put("rs", iPage.getRecords());
+            @SuppressWarnings("unchecked")
+            List<Object> rs = iPage.getRecords();
+            json.put("rs", handListType(rs));
             json.put("pages", iPage.getPages());
             json.put("pageIndex", iPage.getCurrent());
             json.put("pageSize", iPage.getSize());
@@ -62,6 +75,47 @@ public class ResultFormatUtils {
         array.addAll(list);
         return array;
     }
+
+    private static Object dataHandle(Object value) {
+        try {
+            if (value instanceof List) {
+                @SuppressWarnings("unchecked")
+                List<Object> list = (List<Object>) value;
+                return ResultFormatUtils.handListType(list);
+            } else if (value instanceof IPage) {
+                @SuppressWarnings("unchecked")
+                IPage<Object> iPage = (IPage<Object>) value;
+                return ResultFormatUtils.handPage(iPage);
+            } else{
+                return ResultFormatUtils.handObject(value);
+            }
+        } catch (Exception e) {
+            return value;
+        }
+    }
+
+
+    private static List<Object> handListType(List<Object> values) {
+        if (values != null) {
+            values = values.stream()
+                    .map(ResultFormatUtils::dataHandle)
+                    .collect(Collectors.toList());
+        }
+        return values;
+    }
+
+    private static IPage<Object> handPage(IPage<Object> page) {
+        List<Object> list = ResultFormatUtils.handListType(page.getRecords());
+        page.setRecords(list);
+        return page;
+    }
+    /**
+     * 去除null值
+     */
+    private static Object handObject(Object value) {
+        return JSON.parseObject(JSON.toJSONString(value));
+    }
+
 
 //    /**
 //     * 判断一个对象是否是基本类型或基本类型的封装类型

@@ -93,26 +93,25 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, BeanPermis
 
     @Override
     public void resetPortPermission() throws BaseException {
-        List<BeanPermission> permissionInDataBase = load("type");
+        List<BeanPermission> permissionInDataBase = load("port");
         Set<@NotNull(message = "name 不能为空") String> urls = permissionInDataBase.stream()
                 .map(BeanPermission::getName)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
-
         List<String> nowUrls = loadPortPermission();
         Set<BeanPermission> addPermissions = nowUrls.stream()
                 .filter(url -> !urls.contains(url))
                 .map(url->new BeanPermission().setType("port").setName(url))
                 .collect(Collectors.toSet());
-
         add(addPermissions);
-
 
         Set<Integer> ids = permissionInDataBase.stream()
                 .filter(p -> !nowUrls.contains(p.getName()))
                 .map(BeanPermission::getPermissionId)
                 .collect(Collectors.toSet());
-        removeByIds(ids);
+        if (!ids.isEmpty()){
+            removeByIds(ids);
+        }
     }
 
     @Override

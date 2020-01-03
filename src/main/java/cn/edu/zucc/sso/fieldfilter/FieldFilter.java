@@ -1,16 +1,15 @@
-package cn.edu.zucc.sso.resultformat;
+package cn.edu.zucc.sso.fieldfilter;
 
 import java.lang.annotation.*;
 
 /**
  * @author crabxyj
- * @date 2019/12/27 10:45
+ * @date 2020/1/3 10:27
  */
 @Documented //增强javadoc
-@Target({ElementType.METHOD,ElementType.TYPE})
+@Target({ElementType.FIELD,ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ResultFormat {
-    Class<?> clazz() default Object.class;
+public @interface FieldFilter {
     /**
      * 默认包含字段
      */
@@ -19,9 +18,8 @@ public @interface ResultFormat {
      * 排除字段
      */
     String[] exclude() default {};
-
     /**
-     * 请求可选字段
+     * 模糊处理方式
      */
-    String[] properties() default {};
+    String vague() default "";
 }

@@ -1,5 +1,7 @@
 package cn.edu.zucc.sso.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -14,6 +16,7 @@ import javax.validation.constraints.NotNull;
 @Accessors(chain = true)
 @TableName(value = "permission")
 public class BeanPermission {
+    @TableId(type = IdType.AUTO)
     private int permissionId;
 
     @NotNull(message = "type 不能为空")

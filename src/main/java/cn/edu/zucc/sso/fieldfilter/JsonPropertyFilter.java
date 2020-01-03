@@ -1,15 +1,15 @@
-package cn.edu.zucc.sso.resultformat;
+package cn.edu.zucc.sso.fieldfilter;
 
 import java.lang.annotation.*;
 
 /**
  * @author crabxyj
- * @date 2019/12/27 10:45
+ * @date 2019/12/30 21:33
  */
 @Documented //增强javadoc
-@Target({ElementType.METHOD,ElementType.TYPE})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ResultFormat {
+public @interface JsonPropertyFilter {
     Class<?> clazz() default Object.class;
     /**
      * 默认包含字段

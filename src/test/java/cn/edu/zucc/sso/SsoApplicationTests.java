@@ -8,6 +8,7 @@ class SsoApplicationTests {
 
     @Test
     void contextLoads() {
+
     }
 
 }
