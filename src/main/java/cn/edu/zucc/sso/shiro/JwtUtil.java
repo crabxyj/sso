@@ -1,4 +1,4 @@
-package cn.edu.zucc.sso.utils;
+package cn.edu.zucc.sso.shiro;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -40,6 +40,7 @@ public class JwtUtil {
 
     /**
      * 获得token中的信息无需secret解密也能获得
+     *
      * @return token中包含的用户名
      */
     public static String getUsername(String token) {
@@ -53,6 +54,7 @@ public class JwtUtil {
 
     /**
      * 生成签名,5min后过期
+     *
      * @param username 用户名
      * @param secret   用户的密码
      * @return 加密的token

@@ -1,6 +1,7 @@
 package cn.edu.zucc.sso.resultformat;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -16,6 +17,7 @@ import java.lang.reflect.Method;
  * @date 2019/12/27 11:14
  * 返回结果处理类
  */
+@Slf4j
 @RestControllerAdvice
 public class ResultHandler implements ResponseBodyAdvice<Object> {
     @Override
@@ -43,7 +45,8 @@ public class ResultHandler implements ResponseBodyAdvice<Object> {
         }else{
             json = ResultFormatUtils.ressetResult(o);
         }
-        // 去除null值
-        return JSONObject.parseObject(json.toJSONString());
+        log.info(json.toJSONString());
+
+        return json;
     }
 }

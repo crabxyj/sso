@@ -4,6 +4,7 @@ import cn.edu.zucc.sso.exception.BaseException;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +13,8 @@ import java.util.stream.Collectors;
  * @author crabxyj
  * @date 2019/12/23 16:08
  */
-class ResultFormatUtils {
+@Slf4j
+public class ResultFormatUtils {
     private static final JSONObject SYS_EXCEPTION;
 
     static {
@@ -21,15 +23,15 @@ class ResultFormatUtils {
         SYS_EXCEPTION.put("msg", "系统繁忙");
     }
 
-    static JSONObject ressetResult(Object obj) {
+    public static JSONObject ressetResult(Object obj) {
         return ressetResult(obj, 0, "success");
     }
 
     static JSONObject ressetResult(Object obj, ResultFormat format) {
-        if (format != null) {
-            String s = JSONObject.toJSONString(obj, new PropertyFilter(format));
-            obj = JSONObject.parseObject(s, obj.getClass());
-        }
+//        if (format != null && (format.include().length>0||format.exclude().length>0)) {
+//            String s = JSONObject.toJSONString(obj, new PropertyFilter(format));
+//            obj = JSONObject.parseObject(s, obj.getClass());
+//        }
         return ressetResult(obj);
     }
 

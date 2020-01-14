@@ -5,10 +5,7 @@ import cn.edu.zucc.sso.pojo.BeanPermission;
 import cn.edu.zucc.sso.resultformat.ResultFormat;
 import cn.edu.zucc.sso.service.PermissionService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -23,6 +20,7 @@ public class PermissionController {
     @Resource(name = "permissionServiceImpl")
     private PermissionService service;
 
+    @CrossOrigin
     @RequestMapping(value = "/loadPage",method = {RequestMethod.GET,RequestMethod.POST})
     public IPage<BeanPermission> loadPage(
             @RequestParam String type,

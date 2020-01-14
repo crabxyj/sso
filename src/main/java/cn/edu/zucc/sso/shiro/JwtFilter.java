@@ -1,8 +1,10 @@
-package cn.edu.zucc.sso.filter;
+package cn.edu.zucc.sso.shiro;
 
-import cn.edu.zucc.sso.shiro.JwtToken;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.ServletRequest;
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
  * @date 2019/12/24 20:46
  *
  */
+@Slf4j
 public class JwtFilter extends BasicHttpAuthenticationFilter {
     /**
      * 执行登录认证
@@ -25,6 +28,8 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             executeLogin(request, response);
             return true;
         } catch (Exception e) {
+            AuthenticationException e1 = (AuthenticationException) e;
+            log.info("jwt"+e1.getMessage(),e);
             return false;
         }
     }
@@ -35,11 +40,18 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected boolean executeLogin(ServletRequest request, ServletResponse response) {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        String token = httpServletRequest.getHeader("Authorization");
+        String token = httpServletRequest.getHeader(ShiroSession.AUTH_TOKEN);
+        if (StringUtils.isEmpty(token)){
+            token = httpServletRequest.getParameter(ShiroSession.AUTH_TOKEN);
+        }
+        log.info(token);
+
         JwtToken jwtToken = new JwtToken(token);
         // 提交给realm进行登入，如果错误他会抛出异常并被捕获
         getSubject(request, response).login(jwtToken);
         // 如果没有抛出异常则代表登入成功，返回true
+
+        log.info("all right");
         return true;
     }
 
