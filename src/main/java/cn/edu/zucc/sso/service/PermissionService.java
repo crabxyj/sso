@@ -7,13 +7,14 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * @author crabxyj
  * @date 2019/12/25 14:12
  */
-public interface PermissionService extends IService<BeanPermission> {
+public interface PermissionService   {
     /**
      * 获取角色权限
      * @param roleIds 角色
@@ -36,6 +37,8 @@ public interface PermissionService extends IService<BeanPermission> {
      * @return 权限列表
      */
     List<BeanPermission> load(String type);
+
+    List<BeanPermission> load(String type,boolean withRoles);
 
     /**
      * 添加权限

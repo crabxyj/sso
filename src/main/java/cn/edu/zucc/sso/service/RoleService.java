@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -13,7 +16,7 @@ import java.util.Set;
  * @date 2019/12/25 14:15
  */
 @Transactional(rollbackFor = Exception.class)
-public interface RoleService extends IService<BeanRole> {
+public interface RoleService {
 
     /**
      * 获取用户角色信息
@@ -29,6 +32,13 @@ public interface RoleService extends IService<BeanRole> {
      * @return 查询结果
      */
     IPage<BeanRole> loadPage(int page, int pageSize);
+
+    /**
+     * 获取所有角色
+     * @return 查询结果
+     */
+    List<BeanRole> load(Collection<Integer> roleIds);
+
 
     /**
      * 添加 roleid自增

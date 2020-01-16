@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author crabxyj
@@ -15,12 +16,11 @@ import javax.annotation.Resource;
  */
 @RestController
 @ResultFormat
-@RequestMapping("/system/port")
+@RequestMapping("/api/permission")
 public class PermissionController {
     @Resource(name = "permissionServiceImpl")
     private PermissionService service;
 
-    @CrossOrigin
     @RequestMapping(value = "/loadPage",method = {RequestMethod.GET,RequestMethod.POST})
     public IPage<BeanPermission> loadPage(
             @RequestParam String type,
@@ -29,10 +29,10 @@ public class PermissionController {
         return service.loadPage(type,page,pageSize);
     }
 
-//    @RequestMapping(value = "/load",method = {RequestMethod.GET,RequestMethod.POST})
-//    public List<BeanPermission> load(){
-//        return service.list();
-//    }
+    @RequestMapping(value = "/load",method = {RequestMethod.GET,RequestMethod.POST})
+    public List<BeanPermission> load(){
+        return service.load(null,true);
+    }
 
     @RequestMapping(value = "/add",method = {RequestMethod.GET,RequestMethod.POST})
     public BeanPermission add(@RequestParam String name,

@@ -2,26 +2,29 @@ package cn.edu.zucc.sso.service.impl;
 
 import cn.edu.zucc.sso.dao.RoleDao;
 import cn.edu.zucc.sso.exception.BaseException;
+import cn.edu.zucc.sso.pojo.BeanPermission;
 import cn.edu.zucc.sso.pojo.BeanRole;
+import cn.edu.zucc.sso.service.PermissionService;
 import cn.edu.zucc.sso.service.RoleService;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author crabxyj
  * @date 2019/12/25 14:15
  */
 @Service("roleServiceImpl")
-public class RoleServiceImpl extends ServiceImpl<RoleDao, BeanRole> implements RoleService {
+public class RoleServiceImpl extends ServiceImpl<RoleDao, BeanRole> implements RoleService, IService<BeanRole> {
 
     @Resource(name = "roleDao")
     private RoleDao roleDao;
@@ -39,6 +42,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, BeanRole> implements R
         Page<BeanRole> page1 = new Page<>(page, pageSize);
         System.out.println(JSON.toJSONString(page1));
         return page(page1);
+    }
+
+    @Override
+    public List<BeanRole> load(Collection<Integer> roleIds) {
+        return new ArrayList<>(listByIds(roleIds));
     }
 
     @Override

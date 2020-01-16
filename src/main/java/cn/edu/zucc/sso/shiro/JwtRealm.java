@@ -53,6 +53,7 @@ public class JwtRealm extends AuthorizingRealm {
                 authorInfo.addStringPermission(permission.getName());
             }
         }
+        log.info(" userInfo {}",JSON.toJSONString(userInfo));
         return authorInfo;
     }
 
@@ -62,7 +63,11 @@ public class JwtRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         JwtToken token = (JwtToken) authenticationToken;
-        String username = JwtUtil.getUsername(token.getToken());
+        String t = token.getToken();
+        if (t==null){
+            throw new AuthenticationException("用户未登录");
+        }
+        String username = JwtUtil.getUsername(t);
         if (username == null) {
             throw new AuthenticationException("token无效");
         }

@@ -3,14 +3,18 @@ package cn.edu.zucc.sso.service.impl;
 import cn.edu.zucc.sso.dao.PermissionDao;
 import cn.edu.zucc.sso.exception.BaseException;
 import cn.edu.zucc.sso.pojo.BeanPermission;
+import cn.edu.zucc.sso.pojo.BeanRole;
 import cn.edu.zucc.sso.resultformat.ResultFormat;
 import cn.edu.zucc.sso.service.PermissionService;
+import cn.edu.zucc.sso.service.RoleService;
 import cn.edu.zucc.sso.utils.BaseUtils;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,10 +35,13 @@ import java.util.stream.Collectors;
  * @date 2019/12/25 14:13
  */
 @Service("permissionServiceImpl")
-public class PermissionServiceImpl extends ServiceImpl<PermissionDao, BeanPermission> implements PermissionService {
+public class PermissionServiceImpl extends ServiceImpl<PermissionDao, BeanPermission> implements PermissionService, IService<BeanPermission> {
 
     @Resource(name = "permissionDao")
     private PermissionDao dao;
+
+    @Resource(name = "roleServiceImpl")
+    private RoleService roleService;
 
     private final WebApplicationContext applicationContext;
 
@@ -44,28 +51,76 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, BeanPermis
     }
 
     @Override
-    public IPage<BeanPermission> loadPage(String type,int page,int pageSize){
+    public IPage<BeanPermission> loadPage(String type, int page, int pageSize) {
         Page<BeanPermission> page1 = new Page<>(page, pageSize);
-        if (type==null||"".equals(type.trim())){
+        if (type == null || "".equals(type.trim())) {
             return page(page1);
         }
         QueryWrapper<BeanPermission> query = new QueryWrapper<>();
-        query.eq("type",type);
-        return page(page1,query);
+        query.eq("type", type);
+        return page(page1, query);
     }
 
     @Override
-    public List<BeanPermission> load(@NotNull String type){
+    public List<BeanPermission> load(String type) {
+        if (StringUtils.isEmpty(type)){
+            return list();
+        }
         QueryWrapper<BeanPermission> query = new QueryWrapper<>();
-        query.eq("type",type);
+        query.eq("type", type);
         return list(query);
     }
+
+    @Override
+    public List<BeanPermission> load(String type, boolean withRoles) {
+        List<BeanPermission> permissionList = load(type);
+        if (withRoles) {
+            setForeignRoles(permissionList);
+            System.out.println(JSON.toJSONString(permissionList));
+        }
+        return permissionList;
+    }
+
+    private void setForeignRoles(List<BeanPermission> permissionList){
+        Map<Integer, BeanPermission> permissionMap = permissionList
+                .stream()
+                .collect(Collectors.toMap(
+                        BeanPermission::getPermissionId,
+                        p->p));
+
+        List<Map<String, Integer>> maps = dao.selectRolePermission();
+
+        Set<Integer> roleIds = maps.stream()
+                .map(m -> m.get("role_id"))
+                .collect(Collectors.toSet());
+
+        Map<Integer, BeanRole> roleMap = roleService.load(roleIds).stream()
+                .collect(Collectors.toMap(
+                        BeanRole::getRoleId,
+                        r->r));
+
+        for (Map<String, Integer> m : maps) {
+            BeanPermission permission = permissionMap.get(m.get("permission_id"));
+            BeanRole role = roleMap.get(m.get("role_id"));
+            if (permission==null || role==null) {
+                continue;
+            }
+
+            Set<BeanRole> roles = permission.getRoles();
+            if (roles==null){
+                roles = new HashSet<>();
+                permission.setRoles(roles);
+            }
+            roles.add(role);
+        }
+    }
+
 
     @Override
     public BeanPermission add(BeanPermission permission) throws BaseException {
         QueryWrapper<BeanPermission> query = new QueryWrapper<>();
         query.eq("type", permission.getName());
-        query.eq("name",permission.getName());
+        query.eq("name", permission.getName());
         if (getOne(query) != null) {
             throw new BaseException("当前权限已存在");
         }
@@ -73,9 +128,9 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, BeanPermis
         return permission;
     }
 
-    private void add(Collection<BeanPermission> permissions)throws BaseException {
-        for (BeanPermission permission : permissions){
-            if (StringUtils.isEmpty(permission.getName())||StringUtils.isEmpty(permission.getType())){
+    private void add(Collection<BeanPermission> permissions) throws BaseException {
+        for (BeanPermission permission : permissions) {
+            if (StringUtils.isEmpty(permission.getName()) || StringUtils.isEmpty(permission.getType())) {
                 throw new BaseException("权限内容不能为空");
             }
         }
@@ -85,7 +140,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, BeanPermis
     @Override
     public void delete(int permissionId) throws BaseException {
         List<Integer> roleIds = dao.selectRoleIdByPermissionId(permissionId);
-        if(!roleIds.isEmpty()){
+        if (!roleIds.isEmpty()) {
             throw new BaseException("当前权限正在被使用，无法删除");
         }
         removeById(permissionId);
@@ -101,7 +156,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, BeanPermis
         List<String> nowUrls = loadPortPermission();
         Set<BeanPermission> addPermissions = nowUrls.stream()
                 .filter(url -> !urls.contains(url))
-                .map(url->new BeanPermission().setType("port").setName(url))
+                .map(url -> new BeanPermission().setType("port").setName(url))
                 .collect(Collectors.toSet());
         add(addPermissions);
 
@@ -109,7 +164,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, BeanPermis
                 .filter(p -> !nowUrls.contains(p.getName()))
                 .map(BeanPermission::getPermissionId)
                 .collect(Collectors.toSet());
-        if (!ids.isEmpty()){
+        if (!ids.isEmpty()) {
             removeByIds(ids);
         }
     }

@@ -1,12 +1,14 @@
 package cn.edu.zucc.sso.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 /**
  * @author crabxyj
@@ -23,6 +25,12 @@ public class BeanPermission {
     private String type;
     @NotNull(message = "name 不能为空")
     private String name;
+
+    /**
+     * 拥有其权限的角色
+     */
+    @TableField(exist = false)
+    private Set<BeanRole> roles;
 
     @Override
     public int hashCode() {

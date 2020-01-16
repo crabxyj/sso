@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.session.mgt.SessionManager;
-import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
@@ -15,8 +13,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import javax.annotation.Resource;
 import javax.servlet.Filter;
-import java.util.*;
+import java.util.Map;
 
 /**
  * @author crabxyj
@@ -26,6 +25,9 @@ import java.util.*;
 @Slf4j
 @Configuration
 public class ShiroConfig {
+
+    @Resource(name = "shiroServiceImpl")
+    private ShiroServiceImpl shiroService;
 
     /**
      * 不加这个注解不生效，具体不详
@@ -65,14 +67,8 @@ public class ShiroConfig {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         //将自定义的realm交给SecurityManager管理
         //一定要用方法导入不能用new 不然无法注入
-
 //        securityManager.setRealms(Arrays.asList(customRealm(), jwtRealm()));
         securityManager.setRealm(jwtRealm());
-
-        //自定义的shiro session 缓存管理器
-//        securityManager.setSessionManager(sessionManager());
-        //将缓存对象注入到SecurityManager中
-        //defaultWebSecurityManager.setCacheManager(ehCacheManager());
 
         // 关闭shiro自带的session，详情见文档
         // http://shiro.apache.org/session-management.html#SessionManagement-StatelessApplications%28Sessionless%29
@@ -98,40 +94,14 @@ public class ShiroConfig {
 //        filterMap.put("corsAuthenticationFilter",new CorsAuthenticationFilter());
         // 添加自己的过滤器并且取名为jwt
         filterMap.put("jwt", new JwtFilter());
+        filterMap.put("perms",new PermissionsFilter());
         shiroFilterFactoryBean.setFilters(filterMap);
 
         //未授权界面;
         shiroFilterFactoryBean.setUnauthorizedUrl("/403");
 
 //      配置哪些页面需要受保护.以及访问这些页面需要的权限.
-//          1). anon 可以被匿名访问
-//          2). authc 必须认证(即登录)后才可能访问的页面.
-//          3). logout 登出.
-//          4). roles 角色过滤器
-//        Anon：表示可以不用登录直接访问
-//        Authc：表示需要登录之后才可以访问
-//        Perms：表示权限
-//        Roles：表示角色
-//        User：表示用户
-
-        //拦截器
-        Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
-        // 配置不会被拦截的链接 顺序判断
-        filterChainDefinitionMap.put("/login/**", "anon");
-
-        filterChainDefinitionMap.put("/system/**", "perms[\"\"]");
-
-        filterChainDefinitionMap.put("/**.js", "anon");
-        filterChainDefinitionMap.put("/druid/**", "anon");
-        filterChainDefinitionMap.put("/swagger**/**", "anon");
-        filterChainDefinitionMap.put("/webjars/**", "anon");
-        filterChainDefinitionMap.put("/v2/**", "anon");
-
-        //<!-- 过滤链定义，从上向下顺序执行，一般将放在最为下边
-        filterChainDefinitionMap.put("/**", "jwt");
-//        filterChainDefinitionMap.put("/**/*", "authc");
-
-        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(shiroService.loadFilterChainDefinitionMap());
 
         return shiroFilterFactoryBean;
     }

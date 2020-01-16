@@ -18,7 +18,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @Slf4j
-@RequestMapping("/login")
+@RequestMapping("/api/auth")
 public class LoginController {
 
     @Resource(name = "userInfoServiceImpl")

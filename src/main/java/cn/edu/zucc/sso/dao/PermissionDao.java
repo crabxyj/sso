@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author crabxyj
@@ -30,4 +31,6 @@ public interface PermissionDao extends BaseMapper<BeanPermission> {
     @Select("select role_id from role_permission WHERE permission_id = #{permissionId} ")
     List<Integer> selectRoleIdByPermissionId(int permissionId);
 
+    @Select("select role_id,permission_id from role_permission")
+    List<Map<String,Integer>> selectRolePermission();
 }

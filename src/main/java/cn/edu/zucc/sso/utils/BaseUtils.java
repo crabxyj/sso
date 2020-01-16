@@ -17,7 +17,7 @@ public class BaseUtils {
         if(obj instanceof String){
             return String.format("'%s'",obj);
         }else{
-            return String.valueOf(obj);
+            return obj.toString();
         }
     }
 }
